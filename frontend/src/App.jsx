@@ -3,6 +3,8 @@ import Home from './pages/Home';
 import About from './pages/About';
 import { Particles } from './pages/Home';
 import Services from './pages/Services';
+import Contact from './pages/Contact';
+import Footer from './pages/Footer';
 
 export default function App() {
   return (
@@ -30,6 +32,8 @@ export default function App() {
         <Home />
         <About/>
         <Services/>
+        <Contact/>
+        <Footer/>
       </div>
 
     </div>
