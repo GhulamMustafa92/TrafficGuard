@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
 
 import { HiMenuAlt3, HiX } from "react-icons/hi";
-import { MdDashboard, MdSecurity, MdClose } from "react-icons/md";
+import { MdSecurity, MdClose } from "react-icons/md";
 import { RiAiGenerate } from "react-icons/ri";
-import { FaHome, FaInfoCircle, FaCogs, FaEnvelope } from "react-icons/fa";
+import {
+  TbLayoutDashboard,  // Dashboard icon
+  TbSmartHome,        // Home
+  TbVideo,            // Live Stream
+  TbCurrencyDollar,   // Pricing
+  TbMail,             // Contact
+} from "react-icons/tb";
 
+// Updated Nav Links according to your request
 const navLinks = [
-  { name: "Home", href: "#home", icon: FaHome },
-  { name: "About", href: "#about", icon: FaInfoCircle },
-  { name: "Services", href: "#services", icon: FaCogs },
-  { name: "Contact", href: "#contact", icon: FaEnvelope },
+  { name: "Home",        href: "#home",        icon: TbSmartHome        },
+  { name: "Live Stream", href: "#live-stream", icon: TbVideo            },
+  { name: "Pricing",     href: "#pricing",     icon: TbCurrencyDollar   },
+  { name: "Contact",     href: "#contact",     icon: TbMail             },
 ];
 
 const DrawOutlineButton = ({ children, ...rest }) => {
@@ -20,7 +27,7 @@ const DrawOutlineButton = ({ children, ...rest }) => {
       className="group relative px-4 py-2 font-medium text-blue-500 transition-colors duration-[400ms] hover:text-blue-600"
     >
       <span className="flex items-center gap-2">
-        <MdDashboard className="text-lg group-hover:rotate-6 transition-transform duration-200" />
+        <TbLayoutDashboard className="text-lg group-hover:rotate-6 transition-transform duration-200" />
         {children}
       </span>
 
@@ -39,6 +46,8 @@ const DrawOutlineButton = ({ children, ...rest }) => {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Default Active Section set to "#home"
+  const [activeNav, setActiveNav] = useState("#home");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -69,11 +78,11 @@ export default function Navbar() {
         className={`
           max-w-7xl mx-auto
           h-16
-          
           flex items-center justify-between
           rounded-2xl
           bg-black
           transition-all duration-300
+          px-2
           border
           ${
             scrolled
@@ -85,7 +94,10 @@ export default function Navbar() {
         {/* Logo */}
         <a
           href="#home"
-          onClick={closeMenu}
+          onClick={() => {
+            setActiveNav("#home");
+            closeMenu();
+          }}
           className="flex items-center gap-2 sm:gap-2.5 group shrink-0 max-w-[70%] sm:max-w-none"
         >
           <div className="relative flex items-center justify-center shrink-0">
@@ -116,15 +128,25 @@ export default function Navbar() {
           <ul className="flex items-center gap-6 lg:gap-9">
             {navLinks.map((item) => {
               const Icon = item.icon;
+              const isActive = activeNav === item.href;
               return (
                 <li key={item.name}>
                   <a
                     href={item.href}
-                    className="relative flex items-center gap-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 group"
+                    onClick={() => setActiveNav(item.href)}
+                    className={`relative flex items-center gap-2 py-2 text-sm font-medium transition-colors duration-200 group ${
+                      isActive ? "text-white" : "text-gray-300 hover:text-white"
+                    }`}
                   >
-                    <Icon className="text-blue-500 text-sm transition-transform duration-200 group-hover:scale-110" />
+                    <Icon className="text-blue-500 text-base transition-transform duration-200 group-hover:scale-110" />
                     <span>{item.name}</span>
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] rounded-full bg-blue-500 group-hover:w-full transition-all duration-300" />
+                    
+                    {/* Underline for Active/Hover State */}
+                    <span
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-blue-500 transition-all duration-300 ${
+                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    />
                   </a>
                 </li>
               );
@@ -146,8 +168,8 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Dashboard Button */}
-          <div className="hidden md:block ">
-            <DrawOutlineButton className="">Launch Dashboard</DrawOutlineButton>
+          <div className="hidden md:block">
+            <DrawOutlineButton>Dashboard</DrawOutlineButton>
           </div>
 
           {/* Mobile Toggle */}
@@ -204,19 +226,43 @@ export default function Navbar() {
           <div className="px-3 py-2 space-y-1">
             {navLinks.map((item) => {
               const Icon = item.icon;
+              const isActive = activeNav === item.href;
               return (
                 <a
                   key={item.name}
                   href={item.href}
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-blue-500/10 group transition-all duration-200"
+                  onClick={() => {
+                    setActiveNav(item.href);
+                    closeMenu();
+                  }}
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl group transition-all duration-200 ${
+                    isActive
+                      ? "bg-blue-500/15 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-blue-500/10"
+                  }`}
                 >
-                  <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/10 group-hover:bg-blue-500 group-hover:border-blue-500 transition-all duration-200">
-                    <Icon className="text-blue-500 group-hover:text-white text-sm transition-colors duration-200" />
-                  </span>
-                  <span className="font-medium text-xs sm:text-sm">
-                    {item.name}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-200 ${
+                        isActive
+                          ? "bg-blue-500 border-blue-500 text-white"
+                          : "bg-white/5 border-white/10 group-hover:bg-blue-500 group-hover:border-blue-500"
+                      }`}
+                    >
+                      <Icon
+                        className={`text-base transition-colors duration-200 ${
+                          isActive ? "text-white" : "text-blue-500 group-hover:text-white"
+                        }`}
+                      />
+                    </span>
+                    <span className="font-medium text-xs sm:text-sm">
+                      {item.name}
+                    </span>
+                  </div>
+                  {/* Active Indicator Dot */}
+                  {isActive && (
+                    <span className="h-2 w-2 rounded-full bg-blue-500" />
+                  )}
                 </a>
               );
             })}
@@ -240,8 +286,8 @@ export default function Navbar() {
 
           {/* Mobile Dashboard Button */}
           <div className="px-3 pb-3">
-            <DrawOutlineButton className="">
-              Launch AI Dashboard
+            <DrawOutlineButton>
+              Dashboard
             </DrawOutlineButton>
           </div>
         </div>

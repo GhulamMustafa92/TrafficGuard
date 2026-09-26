@@ -19,7 +19,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
 
           {/* Brand */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col items-center gap-5 sm:items-start">
             <div className="flex items-center gap-3">
               <div className="h-[52px] w-[52px] shrink-0 overflow-hidden">
                 <img src={logo} className="h-full w-full object-contain" alt="TrafficGuard Logo" />
@@ -34,7 +34,7 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className="text-xs leading-relaxed text-slate-400">
+            <p className="text-center text-xs leading-relaxed text-slate-400 sm:text-left">
               Autonomous CCTV crash detection and real-time emergency dispatch
               platform powered by advanced neural computer vision models.
             </p>
@@ -51,11 +51,11 @@ export default function Footer() {
           </div>
 
           {/* Navigation */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col items-center gap-5 sm:items-start">
             <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-cyan-400">
               Navigation
             </h4>
-            <ul className="flex flex-col gap-3 text-xs text-slate-400">
+            <ul className="flex flex-col items-center gap-3 text-xs text-slate-400 sm:items-start">
               {[
                 'Live Camera Stream',
                 'Accident Feed',
@@ -77,11 +77,11 @@ export default function Footer() {
           </div>
 
           {/* Core Technologies */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col items-center gap-5 sm:items-start">
             <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-cyan-400">
               Core Technologies
             </h4>
-            <ul className="flex flex-col gap-3 text-xs text-slate-400">
+            <ul className="flex flex-col items-center gap-3 text-xs text-slate-400 sm:items-start">
               <li className="flex items-center gap-2">
                 <MdVideocam className="shrink-0 text-sm text-cyan-400" />
                 YOLOv8 Object Detection
@@ -102,14 +102,14 @@ export default function Footer() {
           </div>
 
           {/* Command HQ */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col items-center gap-5 sm:items-start">
             <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-cyan-400">
               Command HQ
             </h4>
-            <div className="flex flex-col gap-3 text-xs text-slate-400">
+            <div className="flex flex-col items-center gap-3 text-xs text-slate-400 sm:items-start">
               <div className="flex items-start gap-2.5">
                 <MdLocationOn className="mt-0.5 shrink-0 text-base text-cyan-400" />
-                <span>TrafficGuard Central Hub, Gujrat, Pakistan</span>
+                <span className="text-center sm:text-left">TrafficGuard Central Hub, Gujrat, Pakistan</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <MdPhone className="shrink-0 text-base text-cyan-400" />

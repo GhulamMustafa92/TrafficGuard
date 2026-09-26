@@ -1,24 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Renderer, Camera, Geometry, Program, Mesh } from 'ogl';
-import homebg from '../assets/homebg.jpg';
-import { FaPlay, FaRocket, FaShieldAlt, FaCamera } from 'react-icons/fa';
-import { HiSparkles } from 'react-icons/hi';
-import { MdRadar } from 'react-icons/md';
-import { RiAiGenerate } from 'react-icons/ri';
-import one from '../assets/one.jpg';
-import two from '../assets/two.jpg';
-import three from '../assets/three.jpg';
+import React, { useEffect, useRef, useState } from "react";
+import { Renderer, Camera, Geometry, Program, Mesh } from "ogl";
+import homebg from "../assets/homebg.jpg";
+import { FaPlay, FaRocket, FaShieldAlt, FaCamera } from "react-icons/fa";
+import { HiSparkles } from "react-icons/hi";
+import { MdRadar } from "react-icons/md";
+import { RiAiGenerate } from "react-icons/ri";
+import one from "../assets/one.jpg";
+import two from "../assets/two.jpg";
+import three from "../assets/three.jpg";
 
 /* ==========================================================================
    1. PARTICLES COMPONENT
    ========================================================================== */
-const defaultColors = ['#ffffff', '#ffffff', '#ffffff'];
+const defaultColors = ["#ffffff", "#ffffff", "#ffffff"];
 
-const hexToRgb = hex => {
-  hex = hex.replace(/^#/, '');
-  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+const hexToRgb = (hex) => {
+  hex = hex.replace(/^#/, "");
+  if (hex.length === 3)
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
   const int = parseInt(hex.slice(0, 6), 16);
-  return [((int >> 16) & 255) / 255, ((int >> 8) & 255) / 255, (int & 255) / 255];
+  return [
+    ((int >> 16) & 255) / 255,
+    ((int >> 8) & 255) / 255,
+    (int & 255) / 255,
+  ];
 };
 
 const vertex = /* glsl */ `
@@ -72,10 +80,19 @@ const fragment = /* glsl */ `
 `;
 
 export const Particles = ({
-  particleCount = 200, particleSpread = 10, speed = 0.1,
-  particleColors, moveParticlesOnHover = false, particleHoverFactor = 1,
-  alphaParticles = false, particleBaseSize = 100, sizeRandomness = 1,
-  cameraDistance = 20, disableRotation = false, pixelRatio = 1, className
+  particleCount = 200,
+  particleSpread = 10,
+  speed = 0.1,
+  particleColors,
+  moveParticlesOnHover = false,
+  particleHoverFactor = 1,
+  alphaParticles = false,
+  particleBaseSize = 100,
+  sizeRandomness = 1,
+  cameraDistance = 20,
+  disableRotation = false,
+  pixelRatio = 1,
+  className,
 }) => {
   const containerRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -83,7 +100,11 @@ export const Particles = ({
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const renderer = new Renderer({ dpr: pixelRatio, depth: false, alpha: true });
+    const renderer = new Renderer({
+      dpr: pixelRatio,
+      depth: false,
+      alpha: true,
+    });
     const gl = renderer.gl;
     container.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
@@ -93,16 +114,17 @@ export const Particles = ({
       renderer.setSize(container.clientWidth, container.clientHeight);
       camera.perspective({ aspect: gl.canvas.width / gl.canvas.height });
     };
-    window.addEventListener('resize', resize, false);
+    window.addEventListener("resize", resize, false);
     resize();
-    const handleMouseMove = e => {
+    const handleMouseMove = (e) => {
       const rect = container.getBoundingClientRect();
       mouseRef.current = {
         x: ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        y: -(((e.clientY - rect.top) / rect.height) * 2 - 1)
+        y: -(((e.clientY - rect.top) / rect.height) * 2 - 1),
       };
     };
-    if (moveParticlesOnHover) window.addEventListener('mousemove', handleMouseMove);
+    if (moveParticlesOnHover)
+      window.addEventListener("mousemove", handleMouseMove);
     const count = particleCount;
     const positions = new Float32Array(count * 3);
     const randoms = new Float32Array(count * 4);
@@ -111,32 +133,45 @@ export const Particles = ({
     for (let i = 0; i < count; i++) {
       let x, y, z, len;
       do {
-        x = Math.random() * 2 - 1; y = Math.random() * 2 - 1; z = Math.random() * 2 - 1;
+        x = Math.random() * 2 - 1;
+        y = Math.random() * 2 - 1;
+        z = Math.random() * 2 - 1;
         len = x * x + y * y + z * z;
       } while (len > 1 || len === 0);
       const r = Math.cbrt(Math.random());
       positions.set([x * r, y * r, z * r], i * 3);
-      randoms.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
-      colors.set(hexToRgb(palette[Math.floor(Math.random() * palette.length)]), i * 3);
+      randoms.set(
+        [Math.random(), Math.random(), Math.random(), Math.random()],
+        i * 4,
+      );
+      colors.set(
+        hexToRgb(palette[Math.floor(Math.random() * palette.length)]),
+        i * 3,
+      );
     }
     const geometry = new Geometry(gl, {
       position: { size: 3, data: positions },
       random: { size: 4, data: randoms },
-      color: { size: 3, data: colors }
+      color: { size: 3, data: colors },
     });
     const program = new Program(gl, {
-      vertex, fragment,
+      vertex,
+      fragment,
       uniforms: {
-        uTime: { value: 0 }, uSpread: { value: particleSpread },
+        uTime: { value: 0 },
+        uSpread: { value: particleSpread },
         uBaseSize: { value: particleBaseSize * pixelRatio },
         uSizeRandomness: { value: sizeRandomness },
-        uAlphaParticles: { value: alphaParticles ? 1 : 0 }
+        uAlphaParticles: { value: alphaParticles ? 1 : 0 },
       },
-      transparent: true, depthTest: false
+      transparent: true,
+      depthTest: false,
     });
     const particles = new Mesh(gl, { mode: gl.POINTS, geometry, program });
-    let animationFrameId, lastTime = performance.now(), elapsed = 0;
-    const update = t => {
+    let animationFrameId,
+      lastTime = performance.now(),
+      elapsed = 0;
+    const update = (t) => {
       animationFrameId = requestAnimationFrame(update);
       elapsed += (t - lastTime) * speed;
       lastTime = t;
@@ -154,33 +189,58 @@ export const Particles = ({
     };
     animationFrameId = requestAnimationFrame(update);
     return () => {
-      window.removeEventListener('resize', resize);
-      if (moveParticlesOnHover) window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener("resize", resize);
+      if (moveParticlesOnHover)
+        window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationFrameId);
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
     };
-  }, [particleCount, particleSpread, speed, moveParticlesOnHover, particleHoverFactor,
-      alphaParticles, particleBaseSize, sizeRandomness, cameraDistance, disableRotation,
-      pixelRatio, particleColors]);
+  }, [
+    particleCount,
+    particleSpread,
+    speed,
+    moveParticlesOnHover,
+    particleHoverFactor,
+    alphaParticles,
+    particleBaseSize,
+    sizeRandomness,
+    cameraDistance,
+    disableRotation,
+    pixelRatio,
+    particleColors,
+  ]);
 
-  return <div ref={containerRef} className={`relative w-full h-full ${className || ''}`} />;
+  return (
+    <div
+      ref={containerRef}
+      className={`relative w-full h-full ${className || ""}`}
+    />
+  );
 };
 
 /* ==========================================================================
    2. TYPEWRITER COMPONENT
    ========================================================================== */
-const words = ['Accident Detection', 'Collision Analysis', 'Traffic Monitoring', 'Threat Prevention'];
+const words = [
+  "Accident Detection",
+  "Collision Analysis",
+  "Traffic Monitoring",
+  "Threat Prevention",
+];
 
 function TypewriterText() {
   const [index, setIndex] = useState(0);
-  const [displayed, setDisplayed] = useState('');
+  const [displayed, setDisplayed] = useState("");
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const word = words[index];
     let timeout;
     if (!deleting && displayed.length < word.length) {
-      timeout = setTimeout(() => setDisplayed(word.slice(0, displayed.length + 1)), 80);
+      timeout = setTimeout(
+        () => setDisplayed(word.slice(0, displayed.length + 1)),
+        80,
+      );
     } else if (!deleting && displayed.length === word.length) {
       timeout = setTimeout(() => setDeleting(true), 1800);
     } else if (deleting && displayed.length > 0) {
@@ -208,7 +268,7 @@ function ScanLine() {
     <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-10">
       <div
         className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent"
-        style={{ animation: 'scanline 17s linear infinite' }}
+        style={{ animation: "scanline 17s linear infinite" }}
       />
       <style>{`
         @keyframes scanline {
@@ -237,29 +297,31 @@ export default function Home() {
   return (
     <>
       <section className="relative w-full text-white pt-34 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
-
         {/* Background glows */}
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-500/8 rounded-full blur-3xl pointer-events-none z-0" />
         <div className="absolute top-0 right-1/3 w-64 h-64 bg-blue-500/5 rounded-full blur-2xl pointer-events-none z-0" />
 
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
-
           {/* ── LEFT COLUMN ── */}
-          <div className="flex flex-col items-start space-y-7 text-left">
-
+          <div className="flex flex-col items-center md:items-start space-y-7 text-left">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-cyan-400 text-xs font-mono tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.2)] backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-cyan-400 text-[10px] sm:text-xs font-mono tracking-wider sm:tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.2)] backdrop-blur-sm">
+              <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400" />
+                <span className="relative inline-flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-cyan-400" />
               </span>
-              AI-Powered Road Safety Platform &nbsp;·&nbsp; v2.1 Live
+              <span className="whitespace-nowrap">
+                AI-Powered Road Safety
+                <span className="hidden sm:inline"> Platform</span>
+                &nbsp;·&nbsp;v2.1 Live
+              </span>
             </div>
 
             {/* Heading */}
-            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] uppercase">
+            <div className="space-y-2 text-center md:text-left">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] uppercase max-w-[300px] sm:max-w-none mx-auto md:mx-0">
+                {" "}
                 <span className="text-white">AI-Powered</span>
                 <br />
                 <TypewriterText />
@@ -269,18 +331,31 @@ export default function Home() {
             </div>
 
             {/* Description */}
-            <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg border-l-2 border-cyan-500/40 pl-4">
-              <strong className="text-white font-semibold">CrashLens AI</strong> uses real-time computer vision to detect road accidents, analyze camera feeds, and deliver intelligent alerts within seconds — protecting lives before emergency services arrive.
+            <p
+              className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg
+              border-r-2 border-l-2
+              md:border-r-0
+              text-center md:text-left
+              border-cyan-500/40 px-4"
+            >
+              <strong className="text-white font-semibold">CrashLens AI</strong>{" "}
+              uses real-time computer vision to detect road accidents, analyze
+              camera feeds, and deliver intelligent alerts within seconds —
+              protecting lives before emergency services arrive.
             </p>
 
             {/* Feature Pills */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+              {" "}
               {[
-                { icon: <MdRadar />, label: 'Real-Time Radar' },
-                { icon: <RiAiGenerate />, label: 'YOLOv8 Engine' },
-                { icon: <FaCamera />, label: 'Multi-Cam Support' },
+                { icon: <MdRadar />, label: "Real-Time Radar" },
+                { icon: <RiAiGenerate />, label: "YOLOv8 Engine" },
+                { icon: <FaCamera />, label: "Multi-Cam Support" },
               ].map((f) => (
-                <div key={f.label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs font-medium backdrop-blur-sm hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200">
+                <div
+                  key={f.label}
+                  className="flex items-center text-center md:text-left  gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs font-medium backdrop-blur-sm hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200"
+                >
                   <span className="text-cyan-500">{f.icon}</span>
                   {f.label}
                 </div>
@@ -311,7 +386,6 @@ export default function Home() {
 
           {/* ── RIGHT COLUMN ── */}
           <div className="relative flex justify-center items-center w-full">
-
             {/* Outer glow ring */}
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 via-cyan-500/10 to-blue-600/20 rounded-3xl blur-2xl opacity-60 animate-pulse" />
 
@@ -323,7 +397,6 @@ export default function Home() {
 
             {/* Image wrapper */}
             <div className="relative w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,210,255,0.15)]">
-
               {/* Scan line */}
               <ScanLine />
 
@@ -331,8 +404,9 @@ export default function Home() {
               <div
                 className="absolute inset-0 z-10 pointer-events-none opacity-10"
                 style={{
-                  backgroundImage: 'linear-gradient(rgba(0,210,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,210,255,0.3) 1px, transparent 1px)',
-                  backgroundSize: '40px 40px'
+                  backgroundImage:
+                    "linear-gradient(rgba(0,210,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,210,255,0.3) 1px, transparent 1px)",
+                  backgroundSize: "40px 40px",
                 }}
               />
 
@@ -345,19 +419,27 @@ export default function Home() {
               {/* Live badge */}
               <div className="absolute top-3 left-3 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/85 backdrop-blur-md border border-white/10">
                 <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-[10px] font-mono font-bold text-white uppercase tracking-widest">LIVE · CAM-01</span>
+                <span className="text-[10px] font-mono font-bold text-white uppercase tracking-widest">
+                  LIVE · CAM-01
+                </span>
               </div>
 
               {/* FPS counter */}
               <div className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-lg bg-black/85 backdrop-blur-md border border-white/10">
-                <span className="text-[10px] font-mono text-green-400 font-bold">30 FPS</span>
+                <span className="text-[10px] font-mono text-green-400 font-bold">
+                  30 FPS
+                </span>
               </div>
 
               {/* Detection alert */}
-              <div className={`absolute top-14 right-3 z-20 transition-all duration-700 ${detected ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+              <div
+                className={`absolute top-14 right-3 z-20 transition-all duration-700 ${detected ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
+              >
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/20 backdrop-blur-md border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
                   <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
-                  <span className="text-[10px] font-mono font-bold text-red-400 uppercase">Collision Detected · 98%</span>
+                  <span className="text-[6px] md:text-[10px] font-mono font-bold text-red-400 uppercase">
+                    Collision Detected · 98%
+                  </span>
                 </div>
               </div>
 
@@ -368,18 +450,23 @@ export default function Home() {
                     <FaShieldAlt className="text-cyan-400 text-sm" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white leading-none">YOLOv8 Detection Engine</p>
-                    <p className="text-[10px] text-cyan-400 font-mono mt-0.5">Scanning active traffic...</p>
+                    <p className="text-xs font-bold text-white leading-none">
+                      YOLOv8 Detection Engine
+                    </p>
+                    <p className="text-[10px] text-cyan-400 font-mono mt-0.5">
+                      Scanning active traffic...
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/30">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] font-mono text-green-400 font-semibold">ONLINE</span>
+                  <span className="text-[10px] font-mono text-green-400 font-semibold">
+                    ONLINE
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -390,9 +477,7 @@ export default function Home() {
 
       {/* Cards Section */}
       <section className="w-full text-white pt-4 pb-16 px-4 sm:px-6 lg:px-8">
-        
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-
           {/* Card 1 */}
           <div className="group relative cursor-pointer overflow-hidden rounded-2xl border border-blue-500/20 bg-white/[0.03] h-32">
             <img
@@ -473,7 +558,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
     </>
